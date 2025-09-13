@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Đồng Hồ Đếm Ngược - Cây Nảy Mầm</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      background: linear-gradient(to bottom right, #e0f7fa, #ffffff);
+      padding: 50px;
+      color: #333;
+    }
+
+    h1 {
+      font-size: 36px;
+      color: #2e7d32;
+    }
+
+    .timer {
+      font-size: 64px;
+      margin: 30px 0;
+      font-weight: bold;
+    }
+
+    .buttons {
+      margin: 20px;
+    }
+
+    button {
+      padding: 14px 28px;
+      font-size: 20px;
+      margin: 10px;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      transition: background 0.3s ease;
+    }
+
+    #startBtn {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    #startBtn:hover {
+      background-color: #45a049;
+    }
+
+    #endBtn {
+      background-color: #f44336;
+      color: white;
+    }
+
+    #endBtn:hover {
+      background-color: #d32f2f;
+    }
+
+    .result {
+      text-align: center;
+      margin-top: 40px;
+      display: none;
+    }
+
+    .result p {
+      font-size: 38px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .result img {
+      width: 400px;
+      display: none;
+      margin: 0 auto;
+      transition: transform 0.4s ease, opacity 0.6s ease;
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🌱 Thử Thách Cây Nảy Mầm 🌳</h1>
+
+  <div class="timer" id="timer">00:20</div>
+
+  <div class="buttons">
+    <button id="startBtn">START</button>
+    <button id="endBtn" disabled>END</button>
+  </div>
+
+  <div class="result" id="result">
+    <p id="message"></p>
+    <img id="plantImage" src="" alt="Kết quả" />
+  </div>
+
+  <script>
+    const startBtn = document.getElementById("startBtn");
+    const endBtn = document.getElementById("endBtn");
+    const timerEl = document.getElementById("timer");
+    const resultEl = document.getElementById("result");
+    const messageEl = document.getElementById("message");
+    const plantImage = document.getElementById("plantImage");
+    
+    let countdown;
+    let timeLeft = 20;
+    let gameRunning = false;
+    let stage = 0;
+
+    const images = [
+      "https://haycafe.vn/wp-content/uploads/2022/03/Hinh-anh-cay-xanh-mam-non.jpg",
+      "https://inkythuatso.com/uploads/thumbnails/800/2022/06/hinh-anh-cay-xanh-mam-non-cho-dien-thoai-2-inkythuatso-01-10-48-06.jpg",
+      "https://png.pngtree.com/png-vector/20230915/ourlarge/pngtree-small-plant-in-soil-isolated-png-image_10081070.png",
+      "https://salt.tikicdn.com/cache/w1200/ts/product/dc/f7/20/549efc7b77dcfe6fd4c285da2168eb58.jpg"
+    ];
+
+    const messages = [
+      "🌱 Cây non vừa nhú lá",
+      "🍃 Cây non yếu ớt vươn lên",
+      "🌿 Cây non bắt đầu khỏe mạnh",
+      "🌳 Cây trưởng thành tươi tốt"
+    ];
+
+    function updateTimerDisplay() {
+      timerEl.textContent = `00:${String(timeLeft).padStart(2, '0')}`;
+    }
+
+    function showResult(stageNumber) {
+      resultEl.style.display = "block";
+      messageEl.textContent = messages[stageNumber - 1] || "🌳 Cây đã trưởng thành!";
+      plantImage.src = images[stageNumber - 1] || images[images.length - 1];
+      plantImage.style.display = "block";
+      plantImage.style.opacity = 0;
+      plantImage.style.transform = "scale(0.6)";
+      setTimeout(() => {
+        plantImage.style.opacity = 1;
+        plantImage.style.transform = "scale(1)";
+      }, 100);
+    }
+
+    startBtn.addEventListener("click", () => {
+      timeLeft = 20;
+      stage = 0;
+      updateTimerDisplay();
+      resultEl.style.display = "none";
+      messageEl.textContent = "";
+      plantImage.style.display = "none";
+      timerEl.style.color = "#2e7d32";
+
+      gameRunning = true;
+      startBtn.disabled = true;
+      endBtn.disabled = false;
+
+      countdown = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+
+        if (timeLeft % 5 === 0 && timeLeft > 0) {
+          stage++;
+          showResult(stage);
+        }
+
+        if (timeLeft <= 0) {
+          clearInterval(countdown);
+          gameRunning = false;
+          startBtn.disabled = false;
+          endBtn.disabled = true;
+
+          messageEl.textContent = "🎉 Hoàn thành! Cây đã trưởng thành!";
+        }
+      }, 1000);
+    });
+
+    endBtn.addEventListener("click", () => {
+      if (!gameRunning) return;
+
+      clearInterval(countdown);
+      gameRunning = false;
+      startBtn.disabled = false;
+      endBtn.disabled = true;
+
+      resultEl.style.display = "block";
+      messageEl.textContent = "❌ Thua rồi cưng ơi!";
+      plantImage.src = "https://t4.ftcdn.net/jpg/15/14/52/45/360_F_1514524535_vpocvubESDbNbejmpzuY2MiqokLMGhyK.jpg";
+      plantImage.style.display = "block";
+      plantImage.style.opacity = 0;
+      plantImage.style.transform = "scale(0.6)";
+      setTimeout(() => {
+        plantImage.style.opacity = 1;
+        plantImage.style.transform = "scale(1)";
+      }, 100);
+    });
+
+    updateTimerDisplay();
+  </script>
+</body>
+</html>
+<div id="info">
+  <h2>An online Pomodoro Timer to boost your productivity</h2>
+
+  <h3>What is Pomofocus?</h3>
+  <p>
+    Pomofocus is a customizable pomodoro timer that works on desktop & mobile browser. 
+    The aim of this app is to help you focus on any task you are working on, such as study, 
+    writing, or coding. This app is inspired by 
+    <strong style="color:#c0392b;">Pomodoro Technique</strong> 
+    which is a time management method developed by Francesco Cirillo.
+  </p>
+
+  <h3>What is Pomodoro Technique?</h3>
+  <p>
+    The Pomodoro Technique is a time management method that uses a timer to break work into intervals, 
+    traditionally 25 minutes in length, separated by short breaks. It helps improve focus and prevent burnout.
+  </p>
+</div>
